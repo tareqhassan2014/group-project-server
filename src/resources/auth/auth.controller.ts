@@ -69,6 +69,7 @@ export const login = async (
                     img: user.img,
                     role: user.role,
                     status: user.status,
+                    token,
                 },
                 'Login successful!',
                 false,
