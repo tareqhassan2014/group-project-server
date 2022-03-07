@@ -17,9 +17,22 @@ export const signUp = async (
         };
 
         const user = await UserModel.create(body);
+        const token = jwt.issueJWT(user);
 
         return res.json(
-            responseGenerator(user, 'Registration successful!', false)
+            responseGenerator(
+                {
+                    name: user.name,
+                    email: user.email,
+                    id: user._id,
+                    img: user.img,
+                    role: user.role,
+                    status: user.status,
+                    token,
+                },
+                'Login successful!',
+                false
+            )
         );
     } catch (err: any) {
         return res
@@ -72,8 +85,7 @@ export const login = async (
                     token,
                 },
                 'Login successful!',
-                false,
-                token
+                false
             )
         );
     } catch (err: any) {
