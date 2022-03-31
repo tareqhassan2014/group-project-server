@@ -19,21 +19,7 @@ export const signUp = async (
         const user = await UserModel.create(body);
         const token = jwt.issueJWT(user);
 
-        return res.json(
-            responseGenerator(
-                {
-                    name: user.name,
-                    email: user.email,
-                    id: user._id,
-                    img: user.img,
-                    role: user.role,
-                    status: user.status,
-                    token,
-                },
-                'Login successful!',
-                false
-            )
-        );
+        return res.json({ user, token });
     } catch (err: any) {
         return res
             .status(500)
@@ -48,49 +34,21 @@ export const login = async (
 ) => {
     const email = req.body.email;
     const password = req.body.password;
-    console.log(email);
+
     try {
         const user = await UserModel.findOne({ email });
 
         if (!user) {
-            return res
-                .status(500)
-                .json(
-                    responseGenerator('fail', 'no user with this email', true)
-                );
+            return res.status(400).json('no user With this email');
         }
         const isValidPassword = await user.isValidPassword(password);
         if (!isValidPassword) {
-            return res
-                .status(500)
-                .json(
-                    responseGenerator(
-                        'fail',
-                        'incorrect email or password',
-                        true
-                    )
-                );
+            return res.status(400).json('incorrect email or password');
         }
 
         const token = jwt.issueJWT(user);
-        return res.json(
-            responseGenerator(
-                {
-                    name: user.name,
-                    email: user.email,
-                    id: user._id,
-                    img: user.img,
-                    role: user.role,
-                    status: user.status,
-                    token,
-                },
-                'Login successful!',
-                false
-            )
-        );
+        return res.json({ user, token });
     } catch (err: any) {
-        return res
-            .status(500)
-            .json(responseGenerator('fail', err.message, true));
+        return res.status(500).json(err.message);
     }
 };
